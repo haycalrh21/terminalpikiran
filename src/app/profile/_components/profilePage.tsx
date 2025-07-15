@@ -43,15 +43,11 @@ export default function ProfilePage({
       <AppSidebar variant="sidebar" session={session} />
       <SidebarInset>
         <SiteHeader pathname={pathname} />
-        <div className="space-y-6 p-4 ">{children}</div>
-        {/* <div className="flex flex-1 flex-col h-full">
-          <div className="@container/main flex flex-1 flex-col">
-            <main className=" overflow-y-auto">
-              <div className="container mx-auto  max-w-7xl">
-              </div>
-            </main>
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto p-4">
+            <div className="space-y-6">{children}</div>
           </div>
-        </div> */}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

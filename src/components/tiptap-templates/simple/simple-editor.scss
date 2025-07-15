@@ -1,0 +1,307 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+body {
+  --tt-toolbar-height: 44px;
+  --tt-theme-text: var(--tt-gray-light-900, #111827);
+  --tt-bg-color: var(--tt-bg-color, #ffffff);
+  --tt-scrollbar-color: var(--tt-scrollbar-color, #d1d5db);
+
+  /* Block elements colors */
+  --tt-block-bg: #f9fafb;
+  --tt-block-border: #e5e7eb;
+  --tt-block-text: #374151;
+  --tt-code-bg: #f3f4f6;
+  --tt-code-text: #1f2937;
+  --tt-quote-bg: #f8fafc;
+  --tt-quote-border: #3b82f6;
+  --tt-quote-text: #475569;
+
+  .dark & {
+    --tt-theme-text: var(--tt-gray-dark-900, #f9fafb);
+    --tt-bg-color: var(--tt-bg-color, #111827);
+    --tt-scrollbar-color: var(--tt-scrollbar-color, #4b5563);
+
+    /* Dark mode block elements */
+    --tt-block-bg: #1f2937;
+    --tt-block-border: #374151;
+    --tt-block-text: #f3f4f6;
+    --tt-code-bg: #374151;
+    --tt-code-text: #f9fafb;
+    --tt-quote-bg: #1e293b;
+    --tt-quote-border: #3b82f6;
+    --tt-quote-text: #cbd5e1;
+  }
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: var(--tt-theme-text);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  padding: 0;
+  background-color: var(--tt-bg-color);
+}
+
+/* Global selection styling */
+::selection {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+html,
+body,
+#root,
+#app {
+  height: 100%;
+  background-color: var(--tt-bg-color);
+}
+
+body {
+  overflow: hidden;
+}
+
+.tiptap.ProseMirror {
+  font-family: "DM Sans", sans-serif;
+  color: var(--tt-theme-text);
+
+  /* Code blocks */
+  pre {
+    background-color: var(--tt-code-bg) !important;
+    color: var(--tt-code-text) !important;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--tt-block-border);
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+
+    code {
+      background-color: transparent !important;
+      color: inherit !important;
+      padding: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+  }
+
+  /* Inline code */
+  code {
+    background-color: var(--tt-code-bg);
+    color: var(--tt-code-text);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 0.875em;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    background-color: var(--tt-quote-bg);
+    border-left: 4px solid var(--tt-quote-border);
+    color: var(--tt-quote-text);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 0.375rem 0.375rem 0;
+
+    p {
+      margin: 0;
+      color: inherit;
+    }
+  }
+
+  /* Lists */
+  ul,
+  ol {
+    color: var(--tt-theme-text);
+
+    li {
+      color: inherit;
+
+      p {
+        color: inherit;
+      }
+    }
+  }
+
+  /* Task lists */
+  ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+
+      > label {
+        flex-shrink: 0;
+        margin-right: 0.5rem;
+        margin-top: 0.125rem;
+        user-select: none;
+
+        input[type="checkbox"] {
+          margin: 0;
+        }
+      }
+
+      > div {
+        flex: 1;
+
+        p {
+          margin: 0;
+          color: var(--tt-theme-text);
+        }
+      }
+    }
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--tt-theme-text);
+    font-weight: 600;
+    line-height: 1.25;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  /* Paragraphs */
+  p {
+    color: var(--tt-theme-text);
+    line-height: 1.6;
+    margin: 0.75rem 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* Links */
+  a {
+    color: #3b82f6;
+    text-decoration: underline;
+
+    &:hover {
+      color: #2563eb;
+    }
+  }
+
+  /* Highlights */
+  mark {
+    background-color: #fef3c7;
+    color: #92400e;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+
+    .dark & {
+      background-color: #451a03;
+      color: #fcd34d;
+    }
+  }
+
+  /* Strong and emphasis */
+  strong {
+    color: var(--tt-theme-text);
+    font-weight: 600;
+  }
+
+  em {
+    color: var(--tt-theme-text);
+    font-style: italic;
+  }
+
+  /* Strikethrough */
+  s {
+    color: var(--tt-theme-text);
+    text-decoration: line-through;
+  }
+
+  /* Underline */
+  u {
+    color: var(--tt-theme-text);
+    text-decoration: underline;
+  }
+
+  /* Superscript and subscript */
+  sup,
+  sub {
+    color: var(--tt-theme-text);
+    font-size: 0.75em;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  sup {
+    top: -0.5em;
+  }
+
+  sub {
+    bottom: -0.25em;
+  }
+
+  /* Selection/highlight styling */
+  ::selection {
+    background-color: #3b82f6;
+    color: #ffffff;
+  }
+
+  ::-moz-selection {
+    background-color: #3b82f6;
+    color: #ffffff;
+  }
+}
+
+.content-wrapper {
+  height: calc(100% - var(--tt-toolbar-height));
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    display: block;
+    width: 0.5rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--tt-scrollbar-color);
+    border-radius: 4px;
+  }
+
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--tt-scrollbar-color) transparent;
+}
+
+.simple-editor-content {
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.simple-editor-content .tiptap.ProseMirror {
+  padding: 3rem 3rem;
+}
+
+@media screen and (max-width: 480px) {
+  .simple-editor-content .tiptap.ProseMirror {
+    padding: 1rem 1.5rem;
+  }
+}

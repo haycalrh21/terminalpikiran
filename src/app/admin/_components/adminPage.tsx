@@ -41,15 +41,11 @@ export default function AdminPage({
       }
     >
       <AppSidebar variant="sidebar" session={session} />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-screen">
         <SiteHeader pathname={pathname} />
-        <div className="flex flex-1 flex-col h-full">
-          <div className="@container/main flex flex-1 flex-col">
-            <main className="flex-1 overflow-y-auto">
-              <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-7xl">
-                <div className="space-y-6 bg-color1">{children}</div>
-              </div>
-            </main>
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto p-4">
+            <div className="space-y-6">{children}</div>
           </div>
         </div>
       </SidebarInset>

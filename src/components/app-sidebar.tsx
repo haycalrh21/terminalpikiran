@@ -58,6 +58,11 @@ const data = {
       icon: IconUsers,
     },
     {
+      title: "Posts",
+      url: "/admin/dashboard/posts",
+      icon: IconSettings,
+    },
+    {
       title: "Settings",
       url: "/admin/settings",
       icon: IconSettings,
