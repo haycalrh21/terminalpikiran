@@ -1,9 +1,11 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-
 import { redirect } from "next/navigation";
+import ProfilePage from "../_components/profilePage";
+import { UpdateUserForm } from "../_components/update-user-form";
 
-import ProfilePage from "./_components/profilePage";
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const headersList = await headers();
@@ -22,5 +24,12 @@ export default async function Page() {
     user: sessionRaw.user,
   };
 
-  return <ProfilePage session={session}>test</ProfilePage>;
+  return (
+    <ProfilePage session={session}>
+      <UpdateUserForm
+        image={session.user.image ?? ""}
+        name={session.user.name}
+      />
+    </ProfilePage>
+  );
 }

@@ -31,10 +31,10 @@ export const LoginForm = () => {
   }
 
   return (
-    <div className="flex items-center justify-center ">
+    <div className="flex items-center justify-center bg-sidebar text-sidebar-foreground ">
       <form
         onSubmit={handleSubmit}
-        className="max-w-sm w-full space-y-4 bg-white p-6 rounded-xl shadow-md"
+        className="max-w-sm w-full space-y-4 p-6 rounded-xl shadow-md"
       >
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -47,7 +47,7 @@ export const LoginForm = () => {
             <Link
               tabIndex={-1}
               href="/auth/forgot-password"
-              className="text-sm italic text-muted-foreground hover:text-foreground"
+              className="text-sm italic text-sidebar-foreground  hover:text-sidebar-foreground/50"
             >
               Forgot password?
             </Link>

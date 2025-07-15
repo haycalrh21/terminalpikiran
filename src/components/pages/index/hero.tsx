@@ -24,7 +24,7 @@ export default function HeroSection({}) {
   };
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#222831] text-[#DFD0B8]">
+    <section className="relative min-h-screen w-full overflow-hidden bg-color1 text-color2">
       {/* Background animation */}
       <div className="absolute inset-0 z-0">
         <div className="absolute left-[10%] top-[20%] h-24 w-24 animate-float-1 rounded-full bg-white/40 opacity-20 blur-xl" />
