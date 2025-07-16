@@ -5,7 +5,20 @@ import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ProfilePageProps } from "@/interface/user/user";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { useEffect, useState } from "react";
 
 interface ProfilePageComponentProps extends ProfilePageProps {
   children?: React.ReactNode;
@@ -16,6 +29,19 @@ export default function AdminPage({
   children,
 }: ProfilePageComponentProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   // Tambahkan check untuk session di client side juga
   if (!session || !session.user) {
@@ -30,6 +56,29 @@ export default function AdminPage({
       </div>
     );
   }
+
+  const listCommand = [
+    {
+      name: "Dashboard",
+      link: "/admin/dashboard",
+      description: "Main dashboard overview",
+    },
+    {
+      name: "Posts",
+      link: "/admin/dashboard/posts",
+      description: "Manage blog posts",
+    },
+    {
+      name: "Data Posts",
+      link: "/admin/dashboard/dataposts",
+      description: "View posts data table",
+    },
+  ];
+
+  const handleSelect = (link: string) => {
+    setOpen(false);
+    router.push(link);
+  };
 
   return (
     <SidebarProvider
@@ -48,6 +97,31 @@ export default function AdminPage({
             <div className="space-y-6">{children}</div>
           </div>
         </div>
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Navigation">
+              {listCommand.map((item) => (
+                <CommandItem
+                  key={item.name}
+                  value={`${item.name} ${item.description}`}
+                  onSelect={() => handleSelect(item.link)}
+                  className="cursor-pointer"
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium">{item.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.description}
+                    </span>
+                  </div>
+                  <CommandShortcut>{item.link}</CommandShortcut>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandSeparator />
+          </CommandList>
+        </CommandDialog>
       </SidebarInset>
     </SidebarProvider>
   );

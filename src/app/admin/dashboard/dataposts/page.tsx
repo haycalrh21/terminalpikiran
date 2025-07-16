@@ -1,12 +1,11 @@
-import Tiptap from "../../_components/tiptap";
-
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import React from "react";
+import TableData from "../../_components/tableData";
 import { redirect } from "next/navigation";
 import { UserRole } from "../../../../../prisma/generated/client";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import AdminPage from "../../_components/adminPage";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
-import RichTextEditor from "../../_components/tiptap";
 
 export default async function page() {
   const headersList = await headers();
@@ -27,14 +26,18 @@ export default async function page() {
 
   // Check if user has ADMIN role
   if (session.user.role !== UserRole.ADMIN) {
-    redirect("/profile");
+    redirect: "/profile";
   }
 
+  const data = await prisma.post.findMany({
+    include: {
+      user: true,
+    },
+  });
+  console.log("Data fetched:", data);
   return (
     <AdminPage session={session}>
-      <div className="p-4 sm:p-6 max-w-full rounded-lg shadow-md overflow-x-auto">
-        <RichTextEditor session={session} />
-      </div>
+      <TableData data={data} />
     </AdminPage>
   );
 }

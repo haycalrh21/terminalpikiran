@@ -70,23 +70,83 @@ import { useCursorVisibility } from "@/hooks/use-cursor-visibility";
 import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle";
 
 // --- Lib ---
-import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
+import { MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss";
 
 import content from "@/components/tiptap-templates/simple/data/content.json";
+import { ProfilePageProps } from "@/interface/user/user";
+import { savePost } from "@/app/actions/posts/action";
+
+// Custom image upload handler for Pinata
+const handleImageUpload = async (file: File): Promise<string> => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/files", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    const imageUrl = await response.json();
+    return imageUrl;
+  } catch (error) {
+    console.error("Image upload failed:", error);
+    throw error;
+  }
+};
+
+// Helper function to create slug from title
+const createSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+};
+
+// Helper function to extract image URLs from editor content
+const extractImageUrls = (content: any): string[] => {
+  const images: string[] = [];
+
+  const traverse = (node: any) => {
+    if (node.type === "image" && node.attrs?.src) {
+      images.push(node.attrs.src);
+    }
+    if (node.type === "imageUpload" && node.attrs?.src) {
+      images.push(node.attrs.src);
+    }
+    if (node.content) {
+      node.content.forEach(traverse);
+    }
+  };
+
+  if (content.content) {
+    content.content.forEach(traverse);
+  }
+
+  return images;
+};
 
 const MainToolbarContent = ({
   onHighlighterClick,
   onLinkClick,
   onSaveClick,
   isMobile,
+  isSaving,
 }: {
   onHighlighterClick: () => void;
   onLinkClick: () => void;
   onSaveClick: () => void;
   isMobile: boolean;
+  isSaving: boolean;
 }) => {
   return (
     <>
@@ -147,7 +207,9 @@ const MainToolbarContent = ({
       <ToolbarSeparator />
 
       <ToolbarGroup>
-        <Button onClick={onSaveClick}>Save</Button>
+        <Button onClick={onSaveClick} disabled={isSaving}>
+          {isSaving ? "Saving..." : "Save"}
+        </Button>
       </ToolbarGroup>
 
       <Spacer />
@@ -190,12 +252,18 @@ const MobileToolbarContent = ({
   </>
 );
 
-export function SimpleEditor() {
+export function SimpleEditor({
+  session,
+}: {
+  session: ProfilePageProps["session"];
+}) {
   const isMobile = useIsMobile();
   const windowSize = useWindowSize();
   const [mobileView, setMobileView] = React.useState<
     "main" | "highlighter" | "link"
   >("main");
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [title, setTitle] = React.useState(""); // Add title state
   const toolbarRef = React.useRef<HTMLDivElement>(null);
 
   const editor = useEditor({
@@ -240,21 +308,47 @@ export function SimpleEditor() {
   });
 
   // Save function
-  const handleSave = () => {
-    if (editor) {
-      const htmlContent = editor.getHTML();
+  const handleSave = async () => {
+    if (!editor || !session?.user?.id) {
+      console.error("Editor or user session not available");
+      return;
+    }
+
+    if (!title.trim()) {
+      alert("Please enter a title for your post");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
       const jsonContent = editor.getJSON();
-      const textContent = editor.getText();
+      const slug = createSlug(title);
+      const imageUrls = extractImageUrls(jsonContent);
 
-      console.log("=== TIPTAP EDITOR CONTENT ===");
-      console.log("HTML:", htmlContent);
-      console.log("JSON:", jsonContent);
-      console.log("Text:", textContent);
-      console.log("===========================");
+      const postData = {
+        title: title.trim(),
+        slug: slug,
+        content: jsonContent,
+        imageContent: imageUrls,
+        userId: session.user.id,
+      };
 
-      // You can also save to localStorage or send to server
-      // localStorage.setItem('editorContent', htmlContent);
-      // or make API call to save content
+      const result = await savePost(postData);
+
+      if (result.success) {
+        alert("Post saved successfully!");
+        // Optionally redirect or reset form
+        setTitle("");
+        editor.commands.clearContent();
+      } else {
+        alert("Failed to save post: " + result.error);
+      }
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Failed to save post. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -266,37 +360,62 @@ export function SimpleEditor() {
 
   return (
     <EditorContext.Provider value={{ editor }}>
-      <Toolbar
-        ref={toolbarRef}
-        style={
-          isMobile
-            ? {
-                bottom: `calc(100% - ${windowSize.height - bodyRect.y}px)`,
-              }
-            : {}
-        }
-      >
-        {mobileView === "main" ? (
-          <MainToolbarContent
-            onHighlighterClick={() => setMobileView("highlighter")}
-            onLinkClick={() => setMobileView("link")}
-            onSaveClick={handleSave}
-            isMobile={isMobile}
+      <div className="editor-container">
+        {/* Title Input */}
+        <div
+          className="title-input-container"
+          style={{ padding: "1rem", borderBottom: "1px solid #e2e8f0" }}
+        >
+          <input
+            type="text"
+            placeholder="Enter post title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              border: "none",
+              outline: "none",
+              background: "transparent",
+            }}
           />
-        ) : (
-          <MobileToolbarContent
-            type={mobileView === "highlighter" ? "highlighter" : "link"}
-            onBack={() => setMobileView("main")}
-          />
-        )}
-      </Toolbar>
+        </div>
 
-      <div className="content-wrapper">
-        <EditorContent
-          editor={editor}
-          role="presentation"
-          className="simple-editor-content"
-        />
+        <Toolbar
+          ref={toolbarRef}
+          style={
+            isMobile
+              ? {
+                  bottom: `calc(100% - ${windowSize.height - bodyRect.y}px)`,
+                }
+              : {}
+          }
+        >
+          {mobileView === "main" ? (
+            <MainToolbarContent
+              onHighlighterClick={() => setMobileView("highlighter")}
+              onLinkClick={() => setMobileView("link")}
+              onSaveClick={handleSave}
+              isMobile={isMobile}
+              isSaving={isSaving}
+            />
+          ) : (
+            <MobileToolbarContent
+              type={mobileView === "highlighter" ? "highlighter" : "link"}
+              onBack={() => setMobileView("main")}
+            />
+          )}
+        </Toolbar>
+
+        <div className="content-wrapper">
+          <EditorContent
+            editor={editor}
+            role="presentation"
+            className="simple-editor-content"
+          />
+        </div>
       </div>
     </EditorContext.Provider>
   );
