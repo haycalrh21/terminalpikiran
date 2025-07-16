@@ -4,9 +4,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserRole } from "../../../../../prisma/generated/client";
-import AdminPage from "../../_components/adminPage";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
+
 import RichTextEditor from "../../_components/tiptap";
+import AdminPage from "../../_components/adminServer";
 
 export default async function page() {
   const headersList = await headers();
@@ -31,7 +31,7 @@ export default async function page() {
   }
 
   return (
-    <AdminPage session={session}>
+    <AdminPage>
       <div className="p-4 sm:p-6 max-w-full rounded-lg shadow-md overflow-x-auto">
         <RichTextEditor session={session} />
       </div>

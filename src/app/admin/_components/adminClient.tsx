@@ -6,7 +6,6 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ProfilePageProps } from "@/interface/user/user";
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   Command,
   CommandDialog,
@@ -24,7 +23,7 @@ interface ProfilePageComponentProps extends ProfilePageProps {
   children?: React.ReactNode;
 }
 
-export default function AdminPage({
+export default function AdminPageClient({
   session,
   children,
 }: ProfilePageComponentProps) {
@@ -43,7 +42,6 @@ export default function AdminPage({
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // Tambahkan check untuk session di client side juga
   if (!session || !session.user) {
     return (
       <div className="flex items-center justify-center min-h-screen">

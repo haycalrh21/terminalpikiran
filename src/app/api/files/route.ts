@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const url = await pinata.gateways.public.convert(cid);
     return NextResponse.json(url, { status: 200 });
   } catch (e) {
-    console.log(e);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

@@ -102,7 +102,6 @@ export function findNodePosition(props: {
         return { pos: nodePos!, node: nodeAtPos };
       }
     } catch (error) {
-      console.error("Error checking node at position:", error);
       return null;
     }
   }
@@ -173,7 +172,6 @@ export const handleImageUpload = async (
 
     return base64String;
   } catch (error) {
-    console.error("Image upload failed:", error);
     throw error;
   }
 };

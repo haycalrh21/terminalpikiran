@@ -345,7 +345,6 @@ export function SimpleEditor({
         alert("Failed to save post: " + result.error);
       }
     } catch (error) {
-      console.error("Save failed:", error);
       alert("Failed to save post. Please try again.");
     } finally {
       setIsSaving(false);

@@ -51,12 +51,6 @@ export default function RichTextEditor({
 
   // Function to upload file to Pinata
   const uploadFileToPinata = async (file: File): Promise<string> => {
-    console.log("🚀 Starting file upload to Pinata:", {
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
-    });
-
     try {
       setIsUploading(true);
       setUploadProgress(`Uploading ${file.name}...`);
@@ -64,27 +58,18 @@ export default function RichTextEditor({
       const formData = new FormData();
       formData.append("file", file);
 
-      console.log("📤 Sending request to /api/files");
-
       const response = await fetch("/api/files", {
         method: "POST",
         body: formData,
       });
 
-      console.log("📥 Response status:", response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("❌ Upload failed:", {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorText,
-        });
+
         throw new Error(`Upload failed: ${response.statusText}`);
       }
 
       const result = await response.json();
-      console.log("✅ Upload successful:", result);
 
       setUploadProgress("Upload completed!");
 
@@ -94,8 +79,6 @@ export default function RichTextEditor({
         result.url || result.data?.url || result.ipfsUrl || result.IpfsHash
           ? `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`
           : result;
-
-      console.log("🔗 Final image URL:", imageUrl);
 
       // Add URL to uploaded images array
       setUploadedImageUrls((prev) => [...prev, imageUrl]);
@@ -130,8 +113,6 @@ export default function RichTextEditor({
         image: uploadedImageUrls.length > 0 ? uploadedImageUrls[0] : null, // Use first uploaded image as featured image
       };
 
-      console.log("📝 Saving post with data:", postData);
-
       let result;
       if (postId) {
         // Update existing post
@@ -143,10 +124,8 @@ export default function RichTextEditor({
 
       if (result.success) {
         setSaveStatus("saved");
-        console.log("✅ Post saved successfully:", result.data);
       } else {
         setSaveStatus("error");
-        console.error("❌ Failed to save post:", result.error);
       }
     } catch (error) {
       setSaveStatus("error");
@@ -215,16 +194,11 @@ export default function RichTextEditor({
           "image/webp",
         ],
         onDrop: async (currentEditor, files, pos) => {
-          console.log("🎯 Files dropped:", files.length);
-
           for (const file of files) {
             if (file.type.startsWith("image/")) {
-              console.log("🖼️ Processing image file:", file.name);
-
               try {
                 // Upload to Pinata
                 const imageUrl = await uploadFileToPinata(file);
-                console.log("🔗 Image URL from Pinata:", imageUrl);
 
                 // Insert image with Pinata URL
                 currentEditor
@@ -239,10 +213,7 @@ export default function RichTextEditor({
                   })
                   .focus()
                   .run();
-
-                console.log("✅ Image inserted into editor");
               } catch (error) {
-                console.error("❌ Failed to process dropped image:", error);
                 // Fallback to base64 if API fails
                 const fileReader = new FileReader();
                 fileReader.readAsDataURL(file);
@@ -265,16 +236,11 @@ export default function RichTextEditor({
           }
         },
         onPaste: async (currentEditor, files, htmlContent) => {
-          console.log("📋 Files pasted:", files.length);
-
           for (const file of files) {
             if (file.type.startsWith("image/")) {
-              console.log("🖼️ Processing pasted image:", file.name);
-
               try {
                 // Upload to Pinata
                 const imageUrl = await uploadFileToPinata(file);
-                console.log("🔗 Pasted image URL from Pinata:", imageUrl);
 
                 // Insert image with Pinata URL
                 currentEditor
@@ -289,10 +255,7 @@ export default function RichTextEditor({
                   })
                   .focus()
                   .run();
-
-                console.log("✅ Pasted image inserted into editor");
               } catch (error) {
-                console.error("❌ Failed to process pasted image:", error);
                 // Fallback to base64 if API fails
                 const fileReader = new FileReader();
                 fileReader.readAsDataURL(file);
@@ -446,7 +409,7 @@ export default function RichTextEditor({
 
       {/* Save Button - ALWAYS VISIBLE */}
       {isEditable && (
-        <div className="flex items-center gap-2 mt-4 p-4 bg-gray-50 border rounded-lg">
+        <div className="flex items-center gap-2 mt-4 p-4 bg-sidebar border rounded-lg">
           <Button
             onClick={handleSavePost}
             disabled={isSaving}
@@ -497,12 +460,7 @@ export default function RichTextEditor({
           <p>
             💡 Tip: You can drag & drop or paste images directly into the editor
           </p>
-          <p>📤 Images will be automatically uploaded to Pinata IPFS</p>
-          <p>🏆 First uploaded image will be used as featured image</p>
-          <p>
-            💾 Save button is always available - will use default values if
-            empty
-          </p>
+
           {uploadProgress && (
             <p className="text-blue-600">📊 Upload: {uploadProgress}</p>
           )}

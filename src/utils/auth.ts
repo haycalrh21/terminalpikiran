@@ -1,10 +1,11 @@
-import { auth } from "@/lib/auth";
+// lib/auth-utils.ts
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { UserRole } from "../../../../prisma/generated/client";
-import AdminPage from "../_components/adminServer";
+import { auth } from "@/lib/auth";
+import { UserRole } from "../../prisma/generated/client";
 
-export default async function Page() {
+export async function getAuthSession() {
   const headersList = await headers();
 
   const sessionRaw = await auth.api.getSession({
@@ -16,15 +17,19 @@ export default async function Page() {
     redirect("/auth/login");
   }
 
-  const session = {
+  return {
     ...sessionRaw.session,
     user: sessionRaw.user,
   };
+}
+
+export async function getAdminSession() {
+  const session = await getAuthSession();
 
   // Check if user has ADMIN role
   if (session.user.role !== UserRole.ADMIN) {
     redirect("/profile");
   }
 
-  return <AdminPage>test</AdminPage>;
+  return session;
 }

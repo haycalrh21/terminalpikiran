@@ -33,7 +33,6 @@ export async function savePost(data: any) {
       data: post,
     };
   } catch (error) {
-    console.error("Error saving post:", error);
     return {
       success: false,
       error:
@@ -108,4 +107,12 @@ export async function deletePost(id: string) {
           : "Failed to delete post. Please try again.",
     };
   }
+}
+export async function GetSlugPost(slug: string) {
+  const data = await prisma.post.findUnique({
+    where: { slug },
+    include: { user: true },
+  });
+
+  return data;
 }

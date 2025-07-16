@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ProfilePageProps } from "@/interface/user/user";
 import {
+  IconArticle,
   IconCamera,
   IconChartBar,
   IconDashboard,
@@ -17,12 +18,13 @@ import {
   IconReport,
   IconSearch,
   IconSettings,
+  IconTable,
+  IconUser,
   IconUsers,
 } from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
+
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -54,28 +56,24 @@ const data = {
     },
     {
       title: "Users",
-      url: "/admin/users",
+      url: "/admin/dashboard/users",
       icon: IconUsers,
     },
     {
       title: "Posts",
       url: "/admin/dashboard/posts",
-      icon: IconSettings,
+      icon: IconArticle,
     },
     {
       title: "Dataposts",
       url: "/admin/dashboard/dataposts",
-      icon: IconSettings,
+      icon: IconTable,
     },
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: IconSettings,
-    },
+
     {
       title: "Profile",
       url: "/profile",
-      icon: IconReport,
+      icon: IconUser,
     },
   ],
   // Admin menu items yang bisa ditambahkan ke navMain
@@ -97,9 +95,6 @@ export function AppSidebar({
   const pathname = usePathname();
 
   // Debug log
-  console.log("Current pathname:", pathname);
-  console.log("User role:", session?.user?.role);
-  console.log("Is admin path:", pathname.startsWith("/admin"));
 
   // Function untuk mendapatkan nav items berdasarkan role dan path
   const getNavItems = () => {
