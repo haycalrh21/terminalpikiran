@@ -111,8 +111,23 @@ export async function deletePost(id: string) {
 export async function GetSlugPost(slug: string) {
   const data = await prisma.post.findUnique({
     where: { slug },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
 
   return data;
+}
+
+export async function getAllPosts() {
+  const posts = await prisma.post.findMany({
+    include: { user: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return posts;
 }

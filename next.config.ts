@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "www.haycal.my.id",
+        hostname: "peach-deliberate-hawk-41.mypinata.cloud",
         port: "",
       },
     ],

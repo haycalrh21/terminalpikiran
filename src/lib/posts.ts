@@ -104,7 +104,7 @@ function TitleUpdater() {
   },
 ];
 
-export function getAllPosts(): Post[] {
+export function getAllPost(): Post[] {
   return posts;
 }
 
